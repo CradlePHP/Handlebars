@@ -6,7 +6,7 @@ Ultra fast PHP7 implementation of handlebars.js
 ```bash
 $ composer install cradlephp/handlebars
 ```
-
+ 
 <a name="intro"></a>
 ## Introduction
 

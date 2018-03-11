@@ -4,7 +4,7 @@ Ultra fast PHP7 implementation of handlebars.js with no baggage
 ## Install
 
 ```bash
-$ composer install cblanquera/handlebars.php
+$ composer install cradlephp/handlebars
 ```
 
 <a name="intro"></a>
@@ -13,13 +13,6 @@ $ composer install cblanquera/handlebars.php
 PHP Handlebars and JS interface to match with compile time helper support and super nice compile
 time error reporting. This version of Handlebars is based on caching the compiled templates and
 inherently made the overall compile times faster. Loading at ~50ms uncached and ~30ms cached.
-
-<a name="history"></a>
-## History
-
-This project was first developed under [Eden-PHP/Handlebars](https://github.com/Eden-PHP/Handlebars/).
-Then moved to [Cradle/Handlebars](https://github.com/cradlephp/packages/). And now I decided to fully
-separate it independently.
 
 <a name="usage"></a>
 ## Basic Usage
@@ -31,7 +24,7 @@ use HandlebarsPHP\Handler as Handlebars;
 $handlebars = new Handlebars();
 $template = $handlebars->compile('{{foo}} {{bar}}');
 
-echo $template(array('foo' => 'BAR', 'bar' => 'ZOO'));
+echo $template(['foo' => 'BAR', 'bar' => 'ZOO']);
 ```
 
 #### Registering Helpers
@@ -43,7 +36,7 @@ $handlebars->registerHelper('bar', function($options) {
 
 $template = $handlebars->compile('{{foo}} {{bar}}');
 
-echo $template(array('foo' => 'BAR'));
+echo $template(['foo' => 'BAR']);
 ```
 
 #### Registering Partials
@@ -52,7 +45,7 @@ echo $template(array('foo' => 'BAR'));
 $handlebars->registerPartial('bar', 'zoo');
 $template = $handlebars->compile('{{foo}} {{> bar}}');
 
-echo $template(array('foo' => 'BAR'));
+echo $template(['foo' => 'BAR']);
 ```
 
 ====

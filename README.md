@@ -20,7 +20,7 @@ inherently made the overall compile times faster. Loading at ~50ms uncached and 
 #### Rendering
 
 ```php
-use HandlebarsPHP\Handler as Handlebars;
+use Cradle\Handlebars\HandlebarsHandler as Handlebars;
 $handlebars = new Handlebars();
 $template = $handlebars->compile('{{foo}} {{bar}}');
 

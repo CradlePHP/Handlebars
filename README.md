@@ -48,7 +48,7 @@ $template = $handlebars->compile('{{foo}} {{> bar}}');
 echo $template(['foo' => 'BAR']);
 ```
 
-====
+----
 
 <a name="features"></a>
 ## Features
@@ -101,7 +101,7 @@ echo $template(['foo' => 'BAR']);
  - Frames
      - TODO
 
-====
+----
 
 <a name="production"></a>
 ## Production Ready
@@ -112,12 +112,10 @@ When your templates are ready for a production (live) environment, it is recomme
  - Enable cache by using `$handlebars->setCache(__DIR__.'/your/cache/folder/location');`
  - If the folder location does not exist, caching will be disabled.
 
-====
+----
 
 <a name="api"></a>
 ## API
-
-====
 
 <a name="compile"></a>
 
@@ -143,7 +141,7 @@ Returns `function` - the template binding handler
 $handlebars->compile();
 ```
 
-====
+----
 
 <a name="getCache"></a>
 
@@ -159,7 +157,7 @@ $handlebars->getCache();
 
 Returns `Closure`
 
-====
+----
 
 <a name="getHelper"></a>
 
@@ -179,7 +177,7 @@ $handlebars->getHelper('if');
 
 Returns `Closure`
 
-====
+----
 
 <a name="getHelpers"></a>
 
@@ -197,7 +195,7 @@ $handlebars->getHelpers();
 
 Returns `array`
 
-====
+----
 
 <a name="getPartial"></a>
 
@@ -217,7 +215,7 @@ $handlebars->getPartial('foobar');
 
 Returns `string`
 
-====
+----
 
 <a name="getPartials"></a>
 
@@ -235,7 +233,7 @@ $handlebars->getPartials();
 
 Returns `array`
 
-====
+----
 
 <a name="registerHelper"></a>
 
@@ -262,7 +260,7 @@ Returns `Eden\Handlebrs\Index`
 $handlebars->registerHelper();
 ```
 
-====
+----
 
 <a name="registerPartial"></a>
 
@@ -289,7 +287,7 @@ Returns `Eden\Handlebrs\Index`
 $handlebars->registerPartial();
 ```
 
-====
+----
 
 <a name="setCache"></a>
 
@@ -315,7 +313,7 @@ Returns `Eden\Handlebrs\Index`
 $handlebars->setCache('/path/to/cache/folder');
 ```
 
-====  
+---- 
 
 <a name="setPrefix"></a>
 
@@ -341,7 +339,7 @@ Returns `Eden\Handlebrs\Index`
 $handlebars->setPrefix('special-template-');
 ```
 
-====
+----
 
 <a name="unregisterHelper"></a>
 
@@ -367,7 +365,7 @@ Returns `Eden\Handlebars\Index`
 $handlebars->unregisterHelper();
 ```
 
-====
+----
 
 <a name="unregisterPartial"></a>
 

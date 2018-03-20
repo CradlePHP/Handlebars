@@ -1,8 +1,8 @@
 # handlebars.php
 Ultra fast PHP7 implementation of handlebars.js
 
-[![Travis CI](https://travis-ci.org/CradlePHP/handlebars.svg?branch=master)](https://travis-ci.org/CradlePHP/handlebars)
-[![Coverage Status](https://coveralls.io/repos/github/CradlePHP/handlebars/badge.svg?branch=master)](https://coveralls.io/github/CradlePHP/handlebars?branch=master)
+[![Travis CI](https://travis-ci.org/CradlePHP/Handlebars.svg?branch=master)](https://travis-ci.org/CradlePHP/handlebars)
+[![Coverage Status](https://coveralls.io/repos/github/CradlePHP/Handlebars/badge.svg?branch=master)](https://coveralls.io/github/CradlePHP/handlebars?branch=master)
 [![Latest Stable Version](https://poser.pugx.org/cradlephp/handlebars/v/stable)](https://packagist.org/packages/cradlephp/handlebars)
 [![Total Downloads](https://poser.pugx.org/cradlephp/handlebars/downloads)](https://packagist.org/packages/cradlephp/handlebars)
 [![Latest Unstable Version](https://poser.pugx.org/cradlephp/handlebars/v/unstable)](https://packagist.org/packages/cradlephp/handlebars)

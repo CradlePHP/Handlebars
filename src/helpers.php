@@ -222,6 +222,7 @@ return [
 
         if (count($args) && is_array($args[0])) {
             $context = array_merge($args[0], $options['hash']);
+            $context['this'] = $args[0];
         } else if (count($args)) {
             $context = $args[0];
         } else if (!empty($options['hash'])) {

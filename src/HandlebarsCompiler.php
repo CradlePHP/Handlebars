@@ -496,8 +496,8 @@ class HandlebarsCompiler
         $helper = $this->resolveStatic(HandlebarsRuntime::class, 'getHelper', $name);
 
         if (!$helper) {
-            //run each
-            $node['value'] = 'each '.$node['value'];
+            //run noop
+            $node['value'] = 'noop '.$node['value'];
             list($name, $args, $hash) = $this->parseArguments($node['value']);
         }
 

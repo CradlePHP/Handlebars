@@ -3,12 +3,12 @@ use \Cradle\Handlebars\HandlebarsData as Data;
 use \Cradle\Handlebars\HandlebarsRuntime as Runtime;
 
 return function($data = array()) {
-    $noop = function() {};
-    $context = $data = Data::i($data);
-    $helper = Runtime::getHelpers($data);
+  $noop = function() {};
+  $context = $data = Data::i($data);
+  $helper = Runtime::getHelpers($data);
 	
-    $buffer = ''; 
+  $buffer = ''; 
 %s
 
-    return $buffer;
+  return $buffer;
 };

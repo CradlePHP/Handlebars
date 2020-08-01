@@ -26,816 +26,816 @@ use Cradle\Helper\InstanceTrait;
  */
 class HandlebarsCompiler
 {
-    use ResolverTrait, BinderTrait, InstanceTrait;
+  use ResolverTrait, BinderTrait, InstanceTrait;
 
-    /**
-     * @const string BLOCK_TEXT_LINE
-     */
-    const BLOCK_TEXT_LINE = '\r\t$buffer .= \'%s\'.\n;';
+  /**
+   * @const string BLOCK_TEXT_LINE
+   */
+  const BLOCK_TEXT_LINE = '\r\t$buffer .= \'%s\'.\n;';
 
-    /**
-     * @const string BLOCK_TEXT_LAST
-     */
-    const BLOCK_TEXT_LAST = '\r\t$buffer .= \'%s\';';
+  /**
+   * @const string BLOCK_TEXT_LAST
+   */
+  const BLOCK_TEXT_LAST = '\r\t$buffer .= \'%s\';';
 
-    /**
-     * @const string BLOCK_ESCAPE_VALUE
-     */
-    const BLOCK_ESCAPE_VALUE = '\r\t$buffer .= $data->find(\'%s\');\r';
+  /**
+   * @const string BLOCK_ESCAPE_VALUE
+   */
+  const BLOCK_ESCAPE_VALUE = '\r\t$buffer .= $data->find(\'%s\');\r';
 
-    /**
-     * @const string BLOCK_VARIABLE_VALUE
-     */
-    const BLOCK_VARIABLE_VALUE = '\r\t$buffer .= htmlspecialchars($data->find(\'%s\'), ENT_COMPAT, \'UTF-8\');\r';
+  /**
+   * @const string BLOCK_VARIABLE_VALUE
+   */
+  const BLOCK_VARIABLE_VALUE = '\r\t$buffer .= htmlspecialchars($data->find(\'%s\'), ENT_COMPAT, \'UTF-8\');\r';
 
-    /**
-     * @const string BLOCK_ESCAPE_HELPER_OPEN
-     */
-    const BLOCK_ESCAPE_HELPER_OPEN = '\r\t$buffer .= $helper[\'%s\'](';
+  /**
+   * @const string BLOCK_ESCAPE_HELPER_OPEN
+   */
+  const BLOCK_ESCAPE_HELPER_OPEN = '\r\t$buffer .= $helper[\'%s\'](';
 
-    /**
-     * @const string BLOCK_ESCAPE_HELPER_CLOSE
-     */
-    const BLOCK_ESCAPE_HELPER_CLOSE = '\r\t);\r';
+  /**
+   * @const string BLOCK_ESCAPE_HELPER_CLOSE
+   */
+  const BLOCK_ESCAPE_HELPER_CLOSE = '\r\t);\r';
 
-    /**
-     * @const string BLOCK_VARIABLE_HELPER_OPEN
-     */
-    const BLOCK_VARIABLE_HELPER_OPEN = '\r\t$buffer .= htmlspecialchars($helper[\'%s\'](';
+  /**
+   * @const string BLOCK_VARIABLE_HELPER_OPEN
+   */
+  const BLOCK_VARIABLE_HELPER_OPEN = '\r\t$buffer .= htmlspecialchars($helper[\'%s\'](';
 
-    /**
-     * @const string BLOCK_VARIABLE_HELPER_CLOSE
-     */
-    const BLOCK_VARIABLE_HELPER_CLOSE = '\r\t), ENT_COMPAT, \'UTF-8\');\r';
+  /**
+   * @const string BLOCK_VARIABLE_HELPER_CLOSE
+   */
+  const BLOCK_VARIABLE_HELPER_CLOSE = '\r\t), ENT_COMPAT, \'UTF-8\');\r';
 
-    /**
-     * @const string BLOCK_ARGUMENT_VALUE
-     */
-    const BLOCK_ARGUMENT_VALUE = '$data->find(\'%s\')';
+  /**
+   * @const string BLOCK_ARGUMENT_VALUE
+   */
+  const BLOCK_ARGUMENT_VALUE = '$data->find(\'%s\')';
 
-    /**
-     * @const string BLOCK_OPTIONS_OPEN
-     */
-    const BLOCK_OPTIONS_OPEN = 'array(';
+  /**
+   * @const string BLOCK_OPTIONS_OPEN
+   */
+  const BLOCK_OPTIONS_OPEN = 'array(';
 
-    /**
-     * @const string BLOCK_OPTIONS_CLOSE
-     */
-    const BLOCK_OPTIONS_CLOSE = '\r\t)';
+  /**
+   * @const string BLOCK_OPTIONS_CLOSE
+   */
+  const BLOCK_OPTIONS_CLOSE = '\r\t)';
 
-    /**
-     * @const string BLOCK_OPTIONS_FN_OPEN
-     */
-    const BLOCK_OPTIONS_FN_OPEN = '\r\t\'fn\' => function($context = null) use ($noop, $data, &$helper) {';
+  /**
+   * @const string BLOCK_OPTIONS_FN_OPEN
+   */
+  const BLOCK_OPTIONS_FN_OPEN = '\r\t\'fn\' => function($context = null) use ($noop, $data, &$helper) {';
 
-    /**
-     * @const string BLOCK_OPTIONS_FN_BODY_1
-     */
-    const BLOCK_OPTIONS_FN_BODY_1 = '\r\t\1if(is_array($context)) {';
+  /**
+   * @const string BLOCK_OPTIONS_FN_BODY_1
+   */
+  const BLOCK_OPTIONS_FN_BODY_1 = '\r\t\1if(is_array($context)) {';
 
-    /**
-     * @const string BLOCK_OPTIONS_FN_BODY_2
-     */
-    const BLOCK_OPTIONS_FN_BODY_2 = '\r\t\1\1$data->push($context);';
+  /**
+   * @const string BLOCK_OPTIONS_FN_BODY_2
+   */
+  const BLOCK_OPTIONS_FN_BODY_2 = '\r\t\1\1$data->push($context);';
 
-    /**
-     * @const string BLOCK_OPTIONS_FN_BODY_3
-     */
-    const BLOCK_OPTIONS_FN_BODY_3 = '\r\t\1}';
+  /**
+   * @const string BLOCK_OPTIONS_FN_BODY_3
+   */
+  const BLOCK_OPTIONS_FN_BODY_3 = '\r\t\1}';
 
-    /**
-     * @const string BLOCK_OPTIONS_FN_BODY_4
-     */
-    const BLOCK_OPTIONS_FN_BODY_4 = '\r\r\t\1$buffer = \'\';';
+  /**
+   * @const string BLOCK_OPTIONS_FN_BODY_4
+   */
+  const BLOCK_OPTIONS_FN_BODY_4 = '\r\r\t\1$buffer = \'\';';
 
-    /**
-     * @const string BLOCK_OPTIONS_FN_BODY_5
-     */
-    const BLOCK_OPTIONS_FN_BODY_5 = '\r\r\t\1if(is_array($context)) {';
+  /**
+   * @const string BLOCK_OPTIONS_FN_BODY_5
+   */
+  const BLOCK_OPTIONS_FN_BODY_5 = '\r\r\t\1if(is_array($context)) {';
 
-    /**
-     * @const string BLOCK_OPTIONS_FN_BODY_6
-     */
-    const BLOCK_OPTIONS_FN_BODY_6 = '\r\t\1\1$data->pop();';
+  /**
+   * @const string BLOCK_OPTIONS_FN_BODY_6
+   */
+  const BLOCK_OPTIONS_FN_BODY_6 = '\r\t\1\1$data->pop();';
 
-    /**
-     * @const string BLOCK_OPTIONS_FN_BODY_7
-     */
-    const BLOCK_OPTIONS_FN_BODY_7 = '\r\t\1}';
+  /**
+   * @const string BLOCK_OPTIONS_FN_BODY_7
+   */
+  const BLOCK_OPTIONS_FN_BODY_7 = '\r\t\1}';
 
-    /**
-     * @const string BLOCK_OPTIONS_FN_CLOSE
-     */
-    const BLOCK_OPTIONS_FN_CLOSE = '\r\r\t\1return $buffer;\r\t},\r';
+  /**
+   * @const string BLOCK_OPTIONS_FN_CLOSE
+   */
+  const BLOCK_OPTIONS_FN_CLOSE = '\r\r\t\1return $buffer;\r\t},\r';
 
-    /**
-     * @const string BLOCK_OPTIONS_INVERSE_OPEN
-     */
-    const BLOCK_OPTIONS_INVERSE_OPEN = '\r\t\'inverse\' => function($context = null) use ($noop, $data, &$helper) {';
+  /**
+   * @const string BLOCK_OPTIONS_INVERSE_OPEN
+   */
+  const BLOCK_OPTIONS_INVERSE_OPEN = '\r\t\'inverse\' => function($context = null) use ($noop, $data, &$helper) {';
 
-    /**
-     * @const string BLOCK_OPTIONS_INVERSE_BODY_1
-     */
-    const BLOCK_OPTIONS_INVERSE_BODY_1 = '\r\t\1if(is_array($context)) {';
+  /**
+   * @const string BLOCK_OPTIONS_INVERSE_BODY_1
+   */
+  const BLOCK_OPTIONS_INVERSE_BODY_1 = '\r\t\1if(is_array($context)) {';
 
-    /**
-     * @const string BLOCK_OPTIONS_INVERSE_BODY_2
-     */
-    const BLOCK_OPTIONS_INVERSE_BODY_2 = '\r\t\1\1$data->push($context);';
+  /**
+   * @const string BLOCK_OPTIONS_INVERSE_BODY_2
+   */
+  const BLOCK_OPTIONS_INVERSE_BODY_2 = '\r\t\1\1$data->push($context);';
 
-    /**
-     * @const string BLOCK_OPTIONS_INVERSE_BODY_3
-     */
-    const BLOCK_OPTIONS_INVERSE_BODY_3 = '\r\t\1}';
+  /**
+   * @const string BLOCK_OPTIONS_INVERSE_BODY_3
+   */
+  const BLOCK_OPTIONS_INVERSE_BODY_3 = '\r\t\1}';
 
-    /**
-     * @const string BLOCK_OPTIONS_INVERSE_BODY_4
-     */
-    const BLOCK_OPTIONS_INVERSE_BODY_4 = '\r\r\t\1$buffer = \'\';';
+  /**
+   * @const string BLOCK_OPTIONS_INVERSE_BODY_4
+   */
+  const BLOCK_OPTIONS_INVERSE_BODY_4 = '\r\r\t\1$buffer = \'\';';
 
-    /**
-     * @const string BLOCK_OPTIONS_INVERSE_BODY_5
-     */
-    const BLOCK_OPTIONS_INVERSE_BODY_5 = '\r\r\t\1if(is_array($context)) {';
+  /**
+   * @const string BLOCK_OPTIONS_INVERSE_BODY_5
+   */
+  const BLOCK_OPTIONS_INVERSE_BODY_5 = '\r\r\t\1if(is_array($context)) {';
 
-    /**
-     * @const string BLOCK_OPTIONS_INVERSE_BODY_6
-     */
-    const BLOCK_OPTIONS_INVERSE_BODY_6 = '\r\t\1\1$data->pop();';
+  /**
+   * @const string BLOCK_OPTIONS_INVERSE_BODY_6
+   */
+  const BLOCK_OPTIONS_INVERSE_BODY_6 = '\r\t\1\1$data->pop();';
 
-    /**
-     * @const string BLOCK_OPTIONS_INVERSE_BODY_7
-     */
-    const BLOCK_OPTIONS_INVERSE_BODY_7 = '\r\t\1}';
+  /**
+   * @const string BLOCK_OPTIONS_INVERSE_BODY_7
+   */
+  const BLOCK_OPTIONS_INVERSE_BODY_7 = '\r\t\1}';
 
-    /**
-     * @const string BLOCK_OPTIONS_INVERSE_CLOSE
-     */
-    const BLOCK_OPTIONS_INVERSE_CLOSE = '\r\r\t\1return $buffer;\r\t}\r';
+  /**
+   * @const string BLOCK_OPTIONS_INVERSE_CLOSE
+   */
+  const BLOCK_OPTIONS_INVERSE_CLOSE = '\r\r\t\1return $buffer;\r\t}\r';
 
-    /**
-     * @const string BLOCK_OPTIONS_FN_EMPTY
-     */
-    const BLOCK_OPTIONS_FN_EMPTY = '\r\t\'fn\' => $noop,';
+  /**
+   * @const string BLOCK_OPTIONS_FN_EMPTY
+   */
+  const BLOCK_OPTIONS_FN_EMPTY = '\r\t\'fn\' => $noop,';
 
-    /**
-     * @const string BLOCK_OPTIONS_INVERSE_EMPTY
-     */
-    const BLOCK_OPTIONS_INVERSE_EMPTY = '\r\t\'inverse\' => $noop';
+  /**
+   * @const string BLOCK_OPTIONS_INVERSE_EMPTY
+   */
+  const BLOCK_OPTIONS_INVERSE_EMPTY = '\r\t\'inverse\' => $noop';
 
-    /**
-     * @const string BLOCK_OPTIONS_NAME
-     */
-    const BLOCK_OPTIONS_NAME = '\r\t\'name\' => \'%s\',';
+  /**
+   * @const string BLOCK_OPTIONS_NAME
+   */
+  const BLOCK_OPTIONS_NAME = '\r\t\'name\' => \'%s\',';
 
-    /**
-     * @const string BLOCK_OPTIONS_ARGS
-     */
-    const BLOCK_OPTIONS_ARGS = '\r\t\'args\' => \'%s\',';
+  /**
+   * @const string BLOCK_OPTIONS_ARGS
+   */
+  const BLOCK_OPTIONS_ARGS = '\r\t\'args\' => \'%s\',';
 
-    /**
-     * @const string BLOCK_OPTIONS_HASH
-     */
-    const BLOCK_OPTIONS_HASH = '\r\t\'hash\' => array(%s),';
+  /**
+   * @const string BLOCK_OPTIONS_HASH
+   */
+  const BLOCK_OPTIONS_HASH = '\r\t\'hash\' => array(%s),';
 
-    /**
-     * @const string BLOCK_OPTIONS_HASH_KEY_VALUE
-     */
-    const BLOCK_OPTIONS_HASH_KEY_VALUE = '\'%s\' => %s';
+  /**
+   * @const string BLOCK_OPTIONS_HASH_KEY_VALUE
+   */
+  const BLOCK_OPTIONS_HASH_KEY_VALUE = '\'%s\' => %s';
 
-    /**
-     * @const string LAST_OPEN
-     */
-    const LAST_OPEN = ' LAST ';
+  /**
+   * @const string LAST_OPEN
+   */
+  const LAST_OPEN = ' LAST ';
 
-    /**
-     * @var string|null $layout
-     */
-    protected static $layout = null;
+  /**
+   * @var string|null $layout
+   */
+  protected static $layout = null;
 
-    /**
-     * @var HandlebarsHandler|null $handlebars
-     */
-    protected $handlebars = null;
+  /**
+   * @var HandlebarsHandler|null $handlebars
+   */
+  protected $handlebars = null;
 
-    /**
-     * @var string $source
-     */
-    protected $source = '';
+  /**
+   * @var string $source
+   */
+  protected $source = '';
 
-    /**
-     * @var int $offset
-     */
-    protected $offset = 1;
+  /**
+   * @var int $offset
+   */
+  protected $offset = 1;
 
-    /**
-     * @var string $bars
-     */
-    protected $bars = '{}';
+  /**
+   * @var string $bars
+   */
+  protected $bars = '{}';
 
-    /**
-     * Just load the source template
-     *
-     * @param *HandlebarsHandler $handlebars
-     * @param *string            $source
-     */
-    public function __construct(HandlebarsHandler $handlebars, $source)
-    {
-        $this->source = $source;
-        $this->handlebars = $handlebars;
-        $this->bars = $this->handlebars->getBars();
+  /**
+   * Just load the source template
+   *
+   * @param *HandlebarsHandler $handlebars
+   * @param *string      $source
+   */
+  public function __construct(HandlebarsHandler $handlebars, $source)
+  {
+    $this->source = $source;
+    $this->handlebars = $handlebars;
+    $this->bars = $this->handlebars->getBars();
 
-        if (is_null(self::$layout)) {
-            self::$layout = file_get_contents(__DIR__.'/layout.template');
-        }
+    if (is_null(self::$layout)) {
+      self::$layout = file_get_contents(__DIR__.'/layout.template');
+    }
+  }
+
+  /**
+   * Returns the source
+   *
+   * @return string
+   */
+  public function getSource()
+  {
+    return $this->source;
+  }
+
+  /**
+   * Transform the template to code
+   * that can be used independently
+   *
+   * @param bool $layout Whether to use the layout or raw code
+   *
+   * @return string
+   */
+  public function compile($layout = true)
+  {
+    $code = $this->trim($this->source);
+
+    $reference = new StdClass();
+    $reference->buffer = '';
+    $reference->open = [];
+
+    $callback = $this->getTokenizeCallback($reference);
+    $this->resolve(HandlebarsTokenizer::class, $code)
+      ->setBars($this->bars)
+      ->tokenize($callback);
+
+    if (count($reference->open)) {
+      throw HandlebarsException::forMissingClosing($reference->open);
     }
 
-    /**
-     * Returns the source
-     *
-     * @return string
-     */
-    public function getSource()
-    {
-        return $this->source;
+    if (!$layout) {
+      return $reference->buffer;
     }
 
-    /**
-     * Transform the template to code
-     * that can be used independently
-     *
-     * @param bool $layout Whether to use the layout or raw code
-     *
-     * @return string
-     */
-    public function compile($layout = true)
-    {
-        $code = $this->trim($this->source);
+    return sprintf(self::$layout, $reference->buffer);
+  }
 
-        $reference = new StdClass();
-        $reference->buffer = '';
-        $reference->open = [];
+  /**
+   * Returns a code snippet
+   *
+   * @param *int $offset This is to preset the tabbing when generating the code
+   *
+   * @return HandlebarsCompiler
+   */
+  public function setOffset($offset)
+  {
+    $this->offset = $offset;
+    return $this;
+  }
 
-        $callback = $this->getTokenizeCallback($reference);
-        $this->resolve(HandlebarsTokenizer::class, $code)
-            ->setBars($this->bars)
-            ->tokenize($callback);
+  /**
+   * Returns the tokenizer callback
+   *
+   * @param *StdClass $reference
+   *
+   * @return Closure
+   */
+  protected function getTokenizeCallback(StdClass $reference)
+  {
+    return $this->bindCallback(function ($node) use ($reference) {
+      switch ($node['type']) {
+        case HandlebarsTokenizer::TYPE_TEXT:
+          $reference->buffer .= $this->generateText($node, $reference->open);
+          break;
+        case HandlebarsTokenizer::TYPE_VARIABLE_ESCAPE:
+          $reference->buffer .= $this->generateEscape($node, $reference->open);
+          break;
+        case HandlebarsTokenizer::TYPE_VARIABLE_UNESCAPE:
+          $reference->buffer .= $this->generateVariable($node, $reference->open);
+          break;
+        case HandlebarsTokenizer::TYPE_SECTION_OPEN:
+          $reference->buffer .= $this->generateOpen($node, $reference->open);
+          break;
+        case HandlebarsTokenizer::TYPE_SECTION_CLOSE:
+          $reference->buffer .= $this->generateClose($node, $reference->open);
+          break;
+      }
+    });
+  }
 
-        if (count($reference->open)) {
-            throw HandlebarsException::forMissingClosing($reference->open);
-        }
+  /**
+   * Partially renders the text tokens
+   *
+   * @param *array $node
+   * @param *array $open
+   *
+   * @return string
+   */
+  protected function generateText($node)
+  {
+    $buffer = '';
 
-        if (!$layout) {
-            return $reference->buffer;
-        }
+    $value = explode("\n", $node['value']);
+    $last = count($value) - 1;
 
-        return sprintf(self::$layout, $reference->buffer);
+    foreach ($value as $i => $line) {
+      $line = str_replace("'", '\\\'', $line);
+
+      if ($i === $last) {
+        $buffer .= $this->prettyPrint(sprintf(self::BLOCK_TEXT_LAST, $line));
+        continue;
+      }
+
+      $buffer .= $this->prettyPrint(sprintf(self::BLOCK_TEXT_LINE, $line));
     }
 
-    /**
-     * Returns a code snippet
-     *
-     * @param *int $offset This is to preset the tabbing when generating the code
-     *
-     * @return HandlebarsCompiler
-     */
-    public function setOffset($offset)
-    {
-        $this->offset = $offset;
-        return $this;
+    return $buffer;
+  }
+
+  /**
+   * Partially renders the unescaped variable tokens
+   *
+   * @param *array $node
+   * @param *array $open
+   *
+   * @return string
+   */
+  protected function generateVariable($node, &$open)
+  {
+    $node['value'] = trim($node['value']);
+
+    //look out for else
+    if ($node['value'] === 'else') {
+      $open[$this->findSection($open)]['else'] = true;
+
+      return $this->prettyPrint(self::BLOCK_OPTIONS_FN_BODY_5, -1)
+        . $this->prettyPrint(self::BLOCK_OPTIONS_FN_BODY_6)
+        . $this->prettyPrint(self::BLOCK_OPTIONS_FN_BODY_7)
+        . $this->prettyPrint(self::BLOCK_OPTIONS_FN_CLOSE)
+        . $this->prettyPrint(self::BLOCK_OPTIONS_INVERSE_OPEN)
+        . $this->prettyPrint(self::BLOCK_OPTIONS_INVERSE_BODY_1)
+        . $this->prettyPrint(self::BLOCK_OPTIONS_INVERSE_BODY_2)
+        . $this->prettyPrint(self::BLOCK_OPTIONS_INVERSE_BODY_3)
+        . $this->prettyPrint(self::BLOCK_OPTIONS_INVERSE_BODY_4, 0, 1);
     }
 
-    /**
-     * Returns the tokenizer callback
-     *
-     * @param *StdClass $reference
-     *
-     * @return Closure
-     */
-    protected function getTokenizeCallback(StdClass $reference)
-    {
-        return $this->bindCallback(function ($node) use ($reference) {
-            switch ($node['type']) {
-                case HandlebarsTokenizer::TYPE_TEXT:
-                    $reference->buffer .= $this->generateText($node, $reference->open);
-                    break;
-                case HandlebarsTokenizer::TYPE_VARIABLE_ESCAPE:
-                    $reference->buffer .= $this->generateEscape($node, $reference->open);
-                    break;
-                case HandlebarsTokenizer::TYPE_VARIABLE_UNESCAPE:
-                    $reference->buffer .= $this->generateVariable($node, $reference->open);
-                    break;
-                case HandlebarsTokenizer::TYPE_SECTION_OPEN:
-                    $reference->buffer .= $this->generateOpen($node, $reference->open);
-                    break;
-                case HandlebarsTokenizer::TYPE_SECTION_CLOSE:
-                    $reference->buffer .= $this->generateClose($node, $reference->open);
-                    break;
-            }
-        });
+    //lookout for tokenizer
+    $tokenized = $this->tokenize($node);
+    if ($tokenized) {
+      return $tokenized;
     }
 
-    /**
-     * Partially renders the text tokens
-     *
-     * @param *array $node
-     * @param *array $open
-     *
-     * @return string
-     */
-    protected function generateText($node)
-    {
-        $buffer = '';
+    list($name, $args, $hash) = $this->parseArguments($node['value']);
 
-        $value = explode("\n", $node['value']);
-        $last = count($value) - 1;
+    //if it's a helper
+    $helper = $this->resolveStatic(HandlebarsRuntime::class, 'getHelper', $name);
 
-        foreach ($value as $i => $line) {
-            $line = str_replace("'", '\\\'', $line);
+    if ($helper) {
+      //form hash
+      foreach ($hash as $key => $value) {
+        $hash[$key] = sprintf(self::BLOCK_OPTIONS_HASH_KEY_VALUE, $key, $value);
+      }
 
-            if ($i === $last) {
-                $buffer .= $this->prettyPrint(sprintf(self::BLOCK_TEXT_LAST, $line));
-                continue;
-            }
+      $args[] = $this->prettyPrint(self::BLOCK_OPTIONS_OPEN, 0, 2)
+        . $this->prettyPrint(sprintf(self::BLOCK_OPTIONS_NAME, $name))
+        . $this->prettyPrint(sprintf(self::BLOCK_OPTIONS_ARGS, str_replace("'", '\\\'', $node['value'])))
+        . $this->prettyPrint(sprintf(self::BLOCK_OPTIONS_HASH, implode(', \r\t', $hash)))
+        . $this->prettyPrint(self::BLOCK_OPTIONS_FN_EMPTY)
+        . $this->prettyPrint(self::BLOCK_OPTIONS_INVERSE_EMPTY)
+        . $this->prettyPrint(self::BLOCK_OPTIONS_CLOSE, -1);
 
-            $buffer .= $this->prettyPrint(sprintf(self::BLOCK_TEXT_LINE, $line));
-        }
-
-        return $buffer;
+      return $this->prettyPrint(sprintf(self::BLOCK_VARIABLE_HELPER_OPEN, $name), -1)
+        . $this->prettyPrint('\r\t' . implode(', \r\t', $args), 1, -1)
+        . $this->prettyPrint(self::BLOCK_VARIABLE_HELPER_CLOSE);
     }
 
-    /**
-     * Partially renders the unescaped variable tokens
-     *
-     * @param *array $node
-     * @param *array $open
-     *
-     * @return string
-     */
-    protected function generateVariable($node, &$open)
-    {
-        $node['value'] = trim($node['value']);
+    //it's a value ?
+    $value = str_replace(['[', ']', '(', ')'], '', $node['value']);
+    $value = str_replace("'", '\\\'', $value);
+    return $this->prettyPrint(sprintf(self::BLOCK_VARIABLE_VALUE, $value));
+  }
 
-        //look out for else
-        if ($node['value'] === 'else') {
-            $open[$this->findSection($open)]['else'] = true;
+  /**
+   * Partially renders the escaped variable tokens
+   *
+   * @param *array $node
+   * @param *array $open
+   *
+   * @return string
+   */
+  protected function generateEscape($node, &$open)
+  {
+    $node['value'] = trim($node['value']);
 
-            return $this->prettyPrint(self::BLOCK_OPTIONS_FN_BODY_5, -1)
-                . $this->prettyPrint(self::BLOCK_OPTIONS_FN_BODY_6)
-                . $this->prettyPrint(self::BLOCK_OPTIONS_FN_BODY_7)
-                . $this->prettyPrint(self::BLOCK_OPTIONS_FN_CLOSE)
-                . $this->prettyPrint(self::BLOCK_OPTIONS_INVERSE_OPEN)
-                . $this->prettyPrint(self::BLOCK_OPTIONS_INVERSE_BODY_1)
-                . $this->prettyPrint(self::BLOCK_OPTIONS_INVERSE_BODY_2)
-                . $this->prettyPrint(self::BLOCK_OPTIONS_INVERSE_BODY_3)
-                . $this->prettyPrint(self::BLOCK_OPTIONS_INVERSE_BODY_4, 0, 1);
-        }
-
-        //lookout for tokenizer
-        $tokenized = $this->tokenize($node);
-        if ($tokenized) {
-            return $tokenized;
-        }
-
-        list($name, $args, $hash) = $this->parseArguments($node['value']);
-
-        //if it's a helper
-        $helper = $this->resolveStatic(HandlebarsRuntime::class, 'getHelper', $name);
-
-        if ($helper) {
-            //form hash
-            foreach ($hash as $key => $value) {
-                $hash[$key] = sprintf(self::BLOCK_OPTIONS_HASH_KEY_VALUE, $key, $value);
-            }
-
-            $args[] = $this->prettyPrint(self::BLOCK_OPTIONS_OPEN, 0, 2)
-                . $this->prettyPrint(sprintf(self::BLOCK_OPTIONS_NAME, $name))
-                . $this->prettyPrint(sprintf(self::BLOCK_OPTIONS_ARGS, str_replace("'", '\\\'', $node['value'])))
-                . $this->prettyPrint(sprintf(self::BLOCK_OPTIONS_HASH, implode(', \r\t', $hash)))
-                . $this->prettyPrint(self::BLOCK_OPTIONS_FN_EMPTY)
-                . $this->prettyPrint(self::BLOCK_OPTIONS_INVERSE_EMPTY)
-                . $this->prettyPrint(self::BLOCK_OPTIONS_CLOSE, -1);
-
-            return $this->prettyPrint(sprintf(self::BLOCK_VARIABLE_HELPER_OPEN, $name), -1)
-                . $this->prettyPrint('\r\t' . implode(', \r\t', $args), 1, -1)
-                . $this->prettyPrint(self::BLOCK_VARIABLE_HELPER_CLOSE);
-        }
-
-        //it's a value ?
-        $value = str_replace(['[', ']', '(', ')'], '', $node['value']);
-        $value = str_replace("'", '\\\'', $value);
-        return $this->prettyPrint(sprintf(self::BLOCK_VARIABLE_VALUE, $value));
+    //lookout for tokenizer
+    $tokenized = $this->tokenize($node);
+    if ($tokenized) {
+      return $tokenized;
     }
 
-    /**
-     * Partially renders the escaped variable tokens
-     *
-     * @param *array $node
-     * @param *array $open
-     *
-     * @return string
-     */
-    protected function generateEscape($node, &$open)
-    {
-        $node['value'] = trim($node['value']);
+    list($name, $args, $hash) = $this->parseArguments($node['value']);
 
-        //lookout for tokenizer
-        $tokenized = $this->tokenize($node);
-        if ($tokenized) {
-            return $tokenized;
-        }
+    //if it's a helper
+    $helper = $this->resolveStatic(HandlebarsRuntime::class, 'getHelper', $name);
 
-        list($name, $args, $hash) = $this->parseArguments($node['value']);
+    if ($helper) {
+      //form hash
+      foreach ($hash as $key => $value) {
+        $hash[$key] = sprintf(self::BLOCK_OPTIONS_HASH_KEY_VALUE, $key, $value);
+      }
 
-        //if it's a helper
-        $helper = $this->resolveStatic(HandlebarsRuntime::class, 'getHelper', $name);
+      $args[] = $this->prettyPrint(self::BLOCK_OPTIONS_OPEN, 0, 2)
+        . $this->prettyPrint(sprintf(self::BLOCK_OPTIONS_NAME, $name))
+        . $this->prettyPrint(sprintf(self::BLOCK_OPTIONS_ARGS, str_replace("'", '\\\'', $node['value'])))
+        . $this->prettyPrint(sprintf(self::BLOCK_OPTIONS_HASH, implode(', \r\t', $hash)))
+        . $this->prettyPrint(self::BLOCK_OPTIONS_FN_EMPTY)
+        . $this->prettyPrint(self::BLOCK_OPTIONS_INVERSE_EMPTY)
+        . $this->prettyPrint(self::BLOCK_OPTIONS_CLOSE, -1);
 
-        if ($helper) {
-            //form hash
-            foreach ($hash as $key => $value) {
-                $hash[$key] = sprintf(self::BLOCK_OPTIONS_HASH_KEY_VALUE, $key, $value);
-            }
-
-            $args[] = $this->prettyPrint(self::BLOCK_OPTIONS_OPEN, 0, 2)
-                . $this->prettyPrint(sprintf(self::BLOCK_OPTIONS_NAME, $name))
-                . $this->prettyPrint(sprintf(self::BLOCK_OPTIONS_ARGS, str_replace("'", '\\\'', $node['value'])))
-                . $this->prettyPrint(sprintf(self::BLOCK_OPTIONS_HASH, implode(', \r\t', $hash)))
-                . $this->prettyPrint(self::BLOCK_OPTIONS_FN_EMPTY)
-                . $this->prettyPrint(self::BLOCK_OPTIONS_INVERSE_EMPTY)
-                . $this->prettyPrint(self::BLOCK_OPTIONS_CLOSE, -1);
-
-            return $this->prettyPrint(sprintf(self::BLOCK_ESCAPE_HELPER_OPEN, $name), -1)
-                . $this->prettyPrint('\r\t' . implode(', \r\t', $args), 1, -1)
-                . $this->prettyPrint(self::BLOCK_ESCAPE_HELPER_CLOSE);
-        }
-
-        //it's a value ?
-        $value = str_replace(['[', ']', '(', ')'], '', $node['value']);
-        $value = str_replace("'", '\\\'', $value);
-        return $this->prettyPrint(sprintf(self::BLOCK_ESCAPE_VALUE, $value));
+      return $this->prettyPrint(sprintf(self::BLOCK_ESCAPE_HELPER_OPEN, $name), -1)
+        . $this->prettyPrint('\r\t' . implode(', \r\t', $args), 1, -1)
+        . $this->prettyPrint(self::BLOCK_ESCAPE_HELPER_CLOSE);
     }
 
-    /**
-     * Partially renders the section open tokens
-     *
-     * @param *array $node
-     * @param *array $open
-     *
-     * @return string
-     */
-    protected function generateOpen(array $node, array &$open)
-    {
-        $node['value'] = trim($node['value']);
+    //it's a value ?
+    $value = str_replace(['[', ']', '(', ')'], '', $node['value']);
+    $value = str_replace("'", '\\\'', $value);
+    return $this->prettyPrint(sprintf(self::BLOCK_ESCAPE_VALUE, $value));
+  }
 
-        //push in the node, we are going to need this to close
-        $open[] = $node;
+  /**
+   * Partially renders the section open tokens
+   *
+   * @param *array $node
+   * @param *array $open
+   *
+   * @return string
+   */
+  protected function generateOpen(array $node, array &$open)
+  {
+    $node['value'] = trim($node['value']);
 
-        list($name, $args, $hash) = $this->parseArguments($node['value']);
+    //push in the node, we are going to need this to close
+    $open[] = $node;
 
-        //if it's a value
-        $helper = $this->resolveStatic(HandlebarsRuntime::class, 'getHelper', $name);
+    list($name, $args, $hash) = $this->parseArguments($node['value']);
 
-        if (!$helper) {
-            //run noop
-            $node['value'] = 'noop '.$node['value'];
-            list($name, $args, $hash) = $this->parseArguments($node['value']);
-        }
+    //if it's a value
+    $helper = $this->resolveStatic(HandlebarsRuntime::class, 'getHelper', $name);
 
-        //it's a helper
-        //form hash
-        foreach ($hash as $key => $value) {
-            $hash[$key] = sprintf(self::BLOCK_OPTIONS_HASH_KEY_VALUE, $key, $value);
-        }
-
-        $args[] = $this->prettyPrint(self::BLOCK_OPTIONS_OPEN, 0, 2)
-            . $this->prettyPrint(sprintf(self::BLOCK_OPTIONS_NAME, $name))
-            . $this->prettyPrint(sprintf(self::BLOCK_OPTIONS_ARGS, str_replace("'", '\\\'', $node['value'])))
-            . $this->prettyPrint(sprintf(self::BLOCK_OPTIONS_HASH, implode(', \r\t', $hash)))
-            . $this->prettyPrint(self::BLOCK_OPTIONS_FN_OPEN)
-            . $this->prettyPrint(self::BLOCK_OPTIONS_FN_BODY_1)
-            . $this->prettyPrint(self::BLOCK_OPTIONS_FN_BODY_2)
-            . $this->prettyPrint(self::BLOCK_OPTIONS_FN_BODY_3)
-            . $this->prettyPrint(self::BLOCK_OPTIONS_FN_BODY_4);
-
-        return $this->prettyPrint(sprintf(self::BLOCK_ESCAPE_HELPER_OPEN, $name), -2)
-            . $this->prettyPrint('\r\t' . implode(', \r\t', $args), 1, 2);
+    if (!$helper) {
+      //run noop
+      $node['value'] = 'noop '.$node['value'];
+      list($name, $args, $hash) = $this->parseArguments($node['value']);
     }
 
-    /**
-     * Partially renders the section close tokens
-     *
-     * @param *array $node
-     * @param *array $open
-     *
-     * @return string
-     */
-    protected function generateClose(array $node, array &$open)
-    {
-        $node['value'] = trim($node['value']);
-
-        if ($this->findSection($open, $node['value']) === false) {
-            throw HandlebarsException::forUnknownEnd($node['value'], $node['line']);
-        }
-
-        $buffer = '';
-
-        $i = $this->findSection($open);
-
-        if (!isset($open[$i]['else'])) {
-            $buffer .= $this->prettyPrint(self::BLOCK_OPTIONS_FN_BODY_5, -1);
-            $buffer .= $this->prettyPrint(self::BLOCK_OPTIONS_FN_BODY_6);
-            $buffer .= $this->prettyPrint(self::BLOCK_OPTIONS_FN_BODY_7);
-            $buffer .= $this->prettyPrint(self::BLOCK_OPTIONS_FN_CLOSE);
-            $buffer .= $this->prettyPrint(self::BLOCK_OPTIONS_INVERSE_EMPTY);
-        } else {
-            $buffer .= $this->prettyPrint(self::BLOCK_OPTIONS_INVERSE_BODY_5);
-            $buffer .= $this->prettyPrint(self::BLOCK_OPTIONS_INVERSE_BODY_6);
-            $buffer .= $this->prettyPrint(self::BLOCK_OPTIONS_INVERSE_BODY_7);
-            $buffer .= $this->prettyPrint(self::BLOCK_OPTIONS_INVERSE_CLOSE, -1);
-        }
-
-        unset($open[$i]);
-
-        $buffer .= $this->prettyPrint(self::BLOCK_OPTIONS_CLOSE, -1);
-        $buffer .= $this->prettyPrint(self::BLOCK_ESCAPE_HELPER_CLOSE, -1);
-
-        return $buffer;
+    //it's a helper
+    //form hash
+    foreach ($hash as $key => $value) {
+      $hash[$key] = sprintf(self::BLOCK_OPTIONS_HASH_KEY_VALUE, $key, $value);
     }
 
-    /**
-     * Generates helpers to add to the layout
-     * This is a placeholder incase we want to add in the future
-     *
-     * @return string
-     */
-    protected function generateHelpers()
-    {
-        $helpers = $this->handlebars->getHelpers();
+    $args[] = $this->prettyPrint(self::BLOCK_OPTIONS_OPEN, 0, 2)
+      . $this->prettyPrint(sprintf(self::BLOCK_OPTIONS_NAME, $name))
+      . $this->prettyPrint(sprintf(self::BLOCK_OPTIONS_ARGS, str_replace("'", '\\\'', $node['value'])))
+      . $this->prettyPrint(sprintf(self::BLOCK_OPTIONS_HASH, implode(', \r\t', $hash)))
+      . $this->prettyPrint(self::BLOCK_OPTIONS_FN_OPEN)
+      . $this->prettyPrint(self::BLOCK_OPTIONS_FN_BODY_1)
+      . $this->prettyPrint(self::BLOCK_OPTIONS_FN_BODY_2)
+      . $this->prettyPrint(self::BLOCK_OPTIONS_FN_BODY_3)
+      . $this->prettyPrint(self::BLOCK_OPTIONS_FN_BODY_4);
 
-        foreach ($helpers as $name => $helper) {
-            $function = new ReflectionFunction($this->handlebars->getHelper($name));
+    return $this->prettyPrint(sprintf(self::BLOCK_ESCAPE_HELPER_OPEN, $name), -2)
+      . $this->prettyPrint('\r\t' . implode(', \r\t', $args), 1, 2);
+  }
 
-            $path = $function->getFileName();
-            $lines = file_get_contents($path);
-            $file = new SplFileObject($path);
-            $file->seek($function->getStartLine() - 2);
-            $start = $file->ftell();
-            $file->seek($function->getEndLine() - 1);
-            $end = $file->ftell();
+  /**
+   * Partially renders the section close tokens
+   *
+   * @param *array $node
+   * @param *array $open
+   *
+   * @return string
+   */
+  protected function generateClose(array $node, array &$open)
+  {
+    $node['value'] = trim($node['value']);
 
-            $code = preg_replace(
-                '/^.*?function(\s+[^\s\\(]+?)?\s*\\((.+)\\}.*?\s*$/s',
-                'function($2}',
-                substr($lines, $start, $end - $start)
-            );
-
-            $helpers[$name] = sprintf(self::BLOCK_OPTIONS_HASH_KEY_VALUE, $name, $code);
-        }
-
-        return $this->prettyPrint(self::BLOCK_OPTIONS_OPEN)
-            . $this->prettyPrint('\r\t')
-            . implode($this->prettyPrint(',\r\t'), $helpers)
-            . $this->prettyPrint(self::BLOCK_OPTIONS_CLOSE);
+    if ($this->findSection($open, $node['value']) === false) {
+      throw HandlebarsException::forUnknownEnd($node['value'], $node['line']);
     }
 
-    /**
-     * Generates partials to add to the layout
-     * This is a placeholder incase we want to add in the future
-     *
-     * @return string
-     */
-    protected function generatePartials()
-    {
-        $partials = $this->handlebars->getPartials();
+    $buffer = '';
 
-        foreach ($partials as $name => $partial) {
-            $partials[$name] = sprintf(
-                self::BLOCK_OPTIONS_HASH_KEY_VALUE,
-                $name,
-                "'" . str_replace("'", '\\\'', $partial) . "'"
-            );
-        }
+    $i = $this->findSection($open);
 
-        return $this->prettyPrint(self::BLOCK_OPTIONS_OPEN)
-            . $this->prettyPrint('\r\t')
-            . implode($this->prettyPrint(',\r\t'), $partials)
-            . $this->prettyPrint(self::BLOCK_OPTIONS_CLOSE);
+    if (!isset($open[$i]['else'])) {
+      $buffer .= $this->prettyPrint(self::BLOCK_OPTIONS_FN_BODY_5, -1);
+      $buffer .= $this->prettyPrint(self::BLOCK_OPTIONS_FN_BODY_6);
+      $buffer .= $this->prettyPrint(self::BLOCK_OPTIONS_FN_BODY_7);
+      $buffer .= $this->prettyPrint(self::BLOCK_OPTIONS_FN_CLOSE);
+      $buffer .= $this->prettyPrint(self::BLOCK_OPTIONS_INVERSE_EMPTY);
+    } else {
+      $buffer .= $this->prettyPrint(self::BLOCK_OPTIONS_INVERSE_BODY_5);
+      $buffer .= $this->prettyPrint(self::BLOCK_OPTIONS_INVERSE_BODY_6);
+      $buffer .= $this->prettyPrint(self::BLOCK_OPTIONS_INVERSE_BODY_7);
+      $buffer .= $this->prettyPrint(self::BLOCK_OPTIONS_INVERSE_CLOSE, -1);
     }
 
-    /**
-     * Handlebars will give arguments in a string
-     * This will transform them into a legit argument
-     * array
-     *
-     * @param *string $string The argument string
-     *
-     * @return array
-     */
-    protected function parseArguments($string)
-    {
-        $args = [];
-        $hash = [];
+    unset($open[$i]);
 
-        $regex = [
-            '([a-zA-Z0-9]+\="[^"]*")',      // cat="meow"
-            '([a-zA-Z0-9]+\=\'[^\']*\')',   // mouse='squeak squeak'
-            '([a-zA-Z0-9]+\=[a-zA-Z0-9]+)', // dog=false
-            '("[^"]*")',                    // "some\'thi ' ng"
-            '(\'[^\']*\')',                 // 'some"thi " ng'
-            '([^\s]+)'                      // <any group with no spaces>
-        ];
+    $buffer .= $this->prettyPrint(self::BLOCK_OPTIONS_CLOSE, -1);
+    $buffer .= $this->prettyPrint(self::BLOCK_ESCAPE_HELPER_CLOSE, -1);
 
-        preg_match_all('#'.implode('|', $regex).'#is', $string, $matches);
+    return $buffer;
+  }
 
-        $stringArgs = $matches[0];
-        $name = array_shift($stringArgs);
+  /**
+   * Generates helpers to add to the layout
+   * This is a placeholder incase we want to add in the future
+   *
+   * @return string
+   */
+  protected function generateHelpers()
+  {
+    $helpers = $this->handlebars->getHelpers();
 
-        $hashRegex = [
-            '([a-zA-Z0-9]+\="[^"]*")',      // cat="meow"
-            '([a-zA-Z0-9]+\=\'[^\']*\')',   // mouse='squeak squeak'
-            '([a-zA-Z0-9]+\=[a-zA-Z0-9]+)', // dog=false
-        ];
+    foreach ($helpers as $name => $helper) {
+      $function = new ReflectionFunction($this->handlebars->getHelper($name));
 
-        foreach ($stringArgs as $arg) {
-            //if it's an attribute
-            if (!(substr($arg, 0, 1) === "'" && substr($arg, -1) === "'")
-                && !(substr($arg, 0, 1) === '"' && substr($arg, -1) === '"')
-                && preg_match('#'.implode('|', $hashRegex).'#is', $arg)
-            ) {
-                list($hashKey, $hashValue) = explode('=', $arg, 2);
-                $hash[$hashKey] = $this->parseArgument($hashValue);
-                continue;
-            }
+      $path = $function->getFileName();
+      $lines = file_get_contents($path);
+      $file = new SplFileObject($path);
+      $file->seek($function->getStartLine() - 2);
+      $start = $file->ftell();
+      $file->seek($function->getEndLine() - 1);
+      $end = $file->ftell();
 
-            $args[] = $this->parseArgument($arg);
-        }
+      $code = preg_replace(
+        '/^.*?function(\s+[^\s\\(]+?)?\s*\\((.+)\\}.*?\s*$/s',
+        'function($2}',
+        substr($lines, $start, $end - $start)
+      );
 
-        return [$name, $args, $hash];
+      $helpers[$name] = sprintf(self::BLOCK_OPTIONS_HASH_KEY_VALUE, $name, $code);
     }
 
-    /**
-     * If there's a quote, null, bool,
-     * int, float... it's the literal value
-     *
-     * @param *string $arg One string argument value
-     *
-     * @return mixed
-     */
-    protected function parseArgument($arg)
-    {
-        //if it's a literal string value
-        if (strpos($arg, '"') === 0
-            || strpos($arg, "'") === 0
-        ) {
-            return "'" . str_replace("'", '\\\'', substr($arg, 1, -1)) . "'";
-        }
+    return $this->prettyPrint(self::BLOCK_OPTIONS_OPEN)
+      . $this->prettyPrint('\r\t')
+      . implode($this->prettyPrint(',\r\t'), $helpers)
+      . $this->prettyPrint(self::BLOCK_OPTIONS_CLOSE);
+  }
 
-        //if it's null
-        if (strtolower($arg) === 'null'
-            || strtolower($arg) === 'true'
-            || strtolower($arg) === 'false'
-            || is_numeric($arg)
-        ) {
-            return $arg;
-        }
+  /**
+   * Generates partials to add to the layout
+   * This is a placeholder incase we want to add in the future
+   *
+   * @return string
+   */
+  protected function generatePartials()
+  {
+    $partials = $this->handlebars->getPartials();
 
-        $arg = str_replace(['[', ']', '(', ')'], '', $arg);
-        $arg = str_replace("'", '\\\'', $arg);
-        return sprintf(self::BLOCK_ARGUMENT_VALUE, $arg);
+    foreach ($partials as $name => $partial) {
+      $partials[$name] = sprintf(
+        self::BLOCK_OPTIONS_HASH_KEY_VALUE,
+        $name,
+        "'" . str_replace("'", '\\\'', $partial) . "'"
+      );
     }
 
-    /**
-     * Calls an alternative helper to add on to the compiled code
-     *
-     * @param *array $node
-     *
-     * @return string|false
-     */
-    protected function tokenize(array $node)
-    {
-        //lookout for pre processors helper
-        $value = explode(' ', $node['value']);
+    return $this->prettyPrint(self::BLOCK_OPTIONS_OPEN)
+      . $this->prettyPrint('\r\t')
+      . implode($this->prettyPrint(',\r\t'), $partials)
+      . $this->prettyPrint(self::BLOCK_OPTIONS_CLOSE);
+  }
 
-        //is it a helper ?
-        $helper = $this->resolveStatic(HandlebarsRuntime::class, 'getHelper', 'tokenize-' . $value[0]);
+  /**
+   * Handlebars will give arguments in a string
+   * This will transform them into a legit argument
+   * array
+   *
+   * @param *string $string The argument string
+   *
+   * @return array
+   */
+  protected function parseArguments($string)
+  {
+    $args = [];
+    $hash = [];
 
-        if (!$helper) {
-            return false;
-        }
+    $regex = [
+      '([a-zA-Z0-9]+\="[^"]*")',    // cat="meow"
+      '([a-zA-Z0-9]+\=\'[^\']*\')',   // mouse='squeak squeak'
+      '([a-zA-Z0-9]+\=[a-zA-Z0-9]+)', // dog=false
+      '("[^"]*")',          // "some\'thi ' ng"
+      '(\'[^\']*\')',         // 'some"thi " ng'
+      '([^\s]+)'            // <any group with no spaces>
+    ];
 
-        list($name, $args, $hash) = $this->parseArguments($node['value']);
+    preg_match_all('#'.implode('|', $regex).'#is', $string, $matches);
 
-        //options
-        $args[] = [
-            'node'       => $node,
-            'name'       => $name,
-            'args'       => $node['value'],
-            'hash'       => $hash,
-            'offset'     => $this->offset,
-            'handlebars' => $this->handlebars
-        ];
+    $stringArgs = $matches[0];
+    $name = array_shift($stringArgs);
 
-        //NOTE: Tokenized do not have data binded to it
-        return call_user_func_array($helper, $args);
+    $hashRegex = [
+      '([a-zA-Z0-9]+\="[^"]*")',    // cat="meow"
+      '([a-zA-Z0-9]+\=\'[^\']*\')',   // mouse='squeak squeak'
+      '([a-zA-Z0-9]+\=[a-zA-Z0-9]+)', // dog=false
+    ];
+
+    foreach ($stringArgs as $arg) {
+      //if it's an attribute
+      if (!(substr($arg, 0, 1) === "'" && substr($arg, -1) === "'")
+        && !(substr($arg, 0, 1) === '"' && substr($arg, -1) === '"')
+        && preg_match('#'.implode('|', $hashRegex).'#is', $arg)
+      ) {
+        list($hashKey, $hashValue) = explode('=', $arg, 2);
+        $hash[$hashKey] = $this->parseArgument($hashValue);
+        continue;
+      }
+
+      $args[] = $this->parseArgument($arg);
     }
 
-    /**
-     * Makes code look nicely spaced
-     *
-     * @param *string $code
-     * @param int     $before Used to set the token before spacing
-     * @param int     $after Used to set the token after spacing
-     *
-     * @return string
-     */
-    protected function prettyPrint($code, $before = 0, $after = 0)
-    {
-        $this->offset += $before;
+    return [$name, $args, $hash];
+  }
 
-        if ($this->offset < 0) {
-            $this->offset = 0;
-        }
-
-        $code = str_replace(
-            ['\r', '\n', '\t', '\1', '\2'],
-            [
-                "\n",
-                '"\n"',
-                str_repeat('    ', $this->offset),
-                str_repeat('    ', 1),
-                str_repeat('    ', 2)
-            ],
-            $code
-        );
-
-        $this->offset += $after;
-
-        if ($this->offset < 0) {
-            $this->offset = 0;
-        }
-
-        $code = str_replace('\\' . $this->bars[0], $this->bars[0], $code);
-        $code = str_replace('\\' . $this->bars[1], $this->bars[1], $code);
-
-        //''."\n"
-        $code = str_replace(' \'\'."\n"', ' "\n"', $code);
-
-        if ($code === '$buffer .= \'\';') {
-            return '';
-        }
-
-        return $code;
+  /**
+   * If there's a quote, null, bool,
+   * int, float... it's the literal value
+   *
+   * @param *string $arg One string argument value
+   *
+   * @return mixed
+   */
+  protected function parseArgument($arg)
+  {
+    //if it's a literal string value
+    if (strpos($arg, '"') === 0
+      || strpos($arg, "'") === 0
+    ) {
+      return "'" . str_replace("'", '\\\'', substr($arg, 1, -1)) . "'";
     }
 
-    /**
-     * Finds a particular node in the open sections
-     *
-     * @param *array  $open The open nodes
-     * @param string  $name The last name of the node we are looking for
-     *
-     * @return int The index where the section is found
-     */
-    protected function findSection(array $open, $name = self::LAST_OPEN)
-    {
-        foreach ($open as $i => $item) {
-            $item = explode(' ', $item['value']);
-
-            if ($item[0] === $name) {
-                return $i;
-            }
-        }
-
-        if ($name == self::LAST_OPEN) {
-            return $i;
-        }
-
-        return false;
+    //if it's null
+    if (strtolower($arg) === 'null'
+      || strtolower($arg) === 'true'
+      || strtolower($arg) === 'false'
+      || is_numeric($arg)
+    ) {
+      return $arg;
     }
 
-    /**
-     * Quick trim script
-     *
-     * @param *string $string
-     *
-     * @return string
-     */
-    protected function trim($string)
-    {
-        $doubleBarsOpen = $this->bars[0] . $this->bars[0];
-        $tripleBarsOpen = $doubleBarsOpen . $this->bars[0];
-        $doubleBarsClose = $this->bars[1] . $this->bars[1];
-        $tripleBarsClose = $doubleBarsClose . $this->bars[1];
+    $arg = str_replace(['[', ']', '(', ')'], '', $arg);
+    $arg = str_replace("'", '\\\'', $arg);
+    return sprintf(self::BLOCK_ARGUMENT_VALUE, $arg);
+  }
 
-        $doubleBarsRegexOpen = '#\s*' . preg_quote($doubleBarsOpen) . '\~\s*#is';
-        $tripleBarsRegexOpen = '#\s*' . preg_quote($tripleBarsOpen) . '\~\s*#is';
-        $doubleBarsRegexClose = '#\s*\~' . preg_quote($doubleBarsClose) . '\s*#is';
-        $tripleBarsRegexClose = '#\s*\~' . preg_quote($tripleBarsClose) . '\s*#is';
+  /**
+   * Calls an alternative helper to add on to the compiled code
+   *
+   * @param *array $node
+   *
+   * @return string|false
+   */
+  protected function tokenize(array $node)
+  {
+    //lookout for pre processors helper
+    $value = explode(' ', $node['value']);
 
-        $string = preg_replace($tripleBarsRegexOpen, $tripleBarsOpen, $string);
-        $string = preg_replace($tripleBarsRegexClose, $tripleBarsClose, $string);
-        $string = preg_replace($doubleBarsRegexOpen, $doubleBarsOpen, $string);
-        $string = preg_replace($doubleBarsRegexClose, $doubleBarsClose, $string);
+    //is it a helper ?
+    $helper = $this->resolveStatic(HandlebarsRuntime::class, 'getHelper', 'tokenize-' . $value[0]);
 
-        return $string;
+    if (!$helper) {
+      return false;
     }
+
+    list($name, $args, $hash) = $this->parseArguments($node['value']);
+
+    //options
+    $args[] = [
+      'node'     => $node,
+      'name'     => $name,
+      'args'     => $node['value'],
+      'hash'     => $hash,
+      'offset'   => $this->offset,
+      'handlebars' => $this->handlebars
+    ];
+
+    //NOTE: Tokenized do not have data binded to it
+    return call_user_func_array($helper, $args);
+  }
+
+  /**
+   * Makes code look nicely spaced
+   *
+   * @param *string $code
+   * @param int   $before Used to set the token before spacing
+   * @param int   $after Used to set the token after spacing
+   *
+   * @return string
+   */
+  protected function prettyPrint($code, $before = 0, $after = 0)
+  {
+    $this->offset += $before;
+
+    if ($this->offset < 0) {
+      $this->offset = 0;
+    }
+
+    $code = str_replace(
+      ['\r', '\n', '\t', '\1', '\2'],
+      [
+        "\n",
+        '"\n"',
+        str_repeat('  ', $this->offset),
+        str_repeat('  ', 1),
+        str_repeat('  ', 2)
+      ],
+      $code
+    );
+
+    $this->offset += $after;
+
+    if ($this->offset < 0) {
+      $this->offset = 0;
+    }
+
+    $code = str_replace('\\' . $this->bars[0], $this->bars[0], $code);
+    $code = str_replace('\\' . $this->bars[1], $this->bars[1], $code);
+
+    //''."\n"
+    $code = str_replace(' \'\'."\n"', ' "\n"', $code);
+
+    if ($code === '$buffer .= \'\';') {
+      return '';
+    }
+
+    return $code;
+  }
+
+  /**
+   * Finds a particular node in the open sections
+   *
+   * @param *array  $open The open nodes
+   * @param string  $name The last name of the node we are looking for
+   *
+   * @return int The index where the section is found
+   */
+  protected function findSection(array $open, $name = self::LAST_OPEN)
+  {
+    foreach ($open as $i => $item) {
+      $item = explode(' ', $item['value']);
+
+      if ($item[0] === $name) {
+        return $i;
+      }
+    }
+
+    if ($name == self::LAST_OPEN) {
+      return $i;
+    }
+
+    return false;
+  }
+
+  /**
+   * Quick trim script
+   *
+   * @param *string $string
+   *
+   * @return string
+   */
+  protected function trim($string)
+  {
+    $doubleBarsOpen = $this->bars[0] . $this->bars[0];
+    $tripleBarsOpen = $doubleBarsOpen . $this->bars[0];
+    $doubleBarsClose = $this->bars[1] . $this->bars[1];
+    $tripleBarsClose = $doubleBarsClose . $this->bars[1];
+
+    $doubleBarsRegexOpen = '#\s*' . preg_quote($doubleBarsOpen) . '\~\s*#is';
+    $tripleBarsRegexOpen = '#\s*' . preg_quote($tripleBarsOpen) . '\~\s*#is';
+    $doubleBarsRegexClose = '#\s*\~' . preg_quote($doubleBarsClose) . '\s*#is';
+    $tripleBarsRegexClose = '#\s*\~' . preg_quote($tripleBarsClose) . '\s*#is';
+
+    $string = preg_replace($tripleBarsRegexOpen, $tripleBarsOpen, $string);
+    $string = preg_replace($tripleBarsRegexClose, $tripleBarsClose, $string);
+    $string = preg_replace($doubleBarsRegexOpen, $doubleBarsOpen, $string);
+    $string = preg_replace($doubleBarsRegexClose, $doubleBarsClose, $string);
+
+    return $string;
+  }
 }

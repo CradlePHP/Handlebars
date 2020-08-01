@@ -9,112 +9,112 @@ use PHPUnit\Framework\TestCase;
  */
 class Cradle_Handlebars_HandlebarsRuntime_Test extends TestCase
 {
-    /**
-     * Sets up the fixture, for example, opens a network connection.
-     * This method is called before a test is executed.
-     */
-    protected function setUp()
-    {
-        //reset the helpers and partials after every test
-        HandlebarsHandler::i()->reset();
-    }
+  /**
+   * Sets up the fixture, for example, opens a network connection.
+   * This method is called before a test is executed.
+   */
+  protected function setUp()
+  {
+    //reset the helpers and partials after every test
+    HandlebarsHandler::i()->reset();
+  }
 
-    /**
-     * Tears down the fixture, for example, closes a network connection.
-     * This method is called after a test is executed.
-     */
-    protected function tearDown()
-    {
-    }
+  /**
+   * Tears down the fixture, for example, closes a network connection.
+   * This method is called after a test is executed.
+   */
+  protected function tearDown()
+  {
+  }
 
-    /**
-     * @covers Cradle\Handlebars\HandlebarsRuntime::flush
-     */
-    public function testFlush()
-    {
-        //simple helper
-        HandlebarsRuntime::registerHelper('root', function() {
-            return '/some/root';
-        });
+  /**
+   * @covers Cradle\Handlebars\HandlebarsRuntime::flush
+   */
+  public function testFlush()
+  {
+    //simple helper
+    HandlebarsRuntime::registerHelper('root', function() {
+      return '/some/root';
+    });
 
-        HandlebarsRuntime::flush();
-        $helper = HandlebarsRuntime::getHelper('root');
-        $this->assertNull($helper);
-    }
+    HandlebarsRuntime::flush();
+    $helper = HandlebarsRuntime::getHelper('root');
+    $this->assertNull($helper);
+  }
 
-    /**
-     * @covers Cradle\Handlebars\HandlebarsRuntime::getHelper
-     */
-    public function testGetHelper()
-    {
-        HandlebarsRuntime::registerHelper('foo', function() {});
-        $this->assertInstanceOf('Closure', HandlebarsRuntime::getHelper('foo'));
-        $this->assertNull(HandlebarsRuntime::getHelper('bar'));
-    }
+  /**
+   * @covers Cradle\Handlebars\HandlebarsRuntime::getHelper
+   */
+  public function testGetHelper()
+  {
+    HandlebarsRuntime::registerHelper('foo', function() {});
+    $this->assertInstanceOf('Closure', HandlebarsRuntime::getHelper('foo'));
+    $this->assertNull(HandlebarsRuntime::getHelper('bar'));
+  }
 
-    /**
-     * @covers Cradle\Handlebars\HandlebarsRuntime::getHelpers
-     */
-    public function testGetHelpers()
-    {
-        $helpers = HandlebarsRuntime::getHelpers();
-        $this->assertTrue(is_array($helpers));
-    }
+  /**
+   * @covers Cradle\Handlebars\HandlebarsRuntime::getHelpers
+   */
+  public function testGetHelpers()
+  {
+    $helpers = HandlebarsRuntime::getHelpers();
+    $this->assertTrue(is_array($helpers));
+  }
 
-    /**
-     * @covers Cradle\Handlebars\HandlebarsRuntime::getPartial
-     */
-    public function testGetPartial()
-    {
-        HandlebarsRuntime::registerPartial('foo', 'bar');
-        $this->assertTrue(is_string(HandlebarsRuntime::getPartial('foo')));
-        $this->assertNull(HandlebarsRuntime::getPartial('foobar'));
-    }
+  /**
+   * @covers Cradle\Handlebars\HandlebarsRuntime::getPartial
+   */
+  public function testGetPartial()
+  {
+    HandlebarsRuntime::registerPartial('foo', 'bar');
+    $this->assertTrue(is_string(HandlebarsRuntime::getPartial('foo')));
+    $this->assertNull(HandlebarsRuntime::getPartial('foobar'));
+  }
 
-    /**
-     * @covers Cradle\Handlebars\HandlebarsRuntime::getPartials
-     */
-    public function testGetPartials()
-    {
-        $partials = HandlebarsRuntime::getPartials();
-        $this->assertTrue(is_array($partials));
-    }
+  /**
+   * @covers Cradle\Handlebars\HandlebarsRuntime::getPartials
+   */
+  public function testGetPartials()
+  {
+    $partials = HandlebarsRuntime::getPartials();
+    $this->assertTrue(is_array($partials));
+  }
 
-    /**
-     * @covers Cradle\Handlebars\HandlebarsRuntime::registerHelper
-     */
-    public function testRegisterHelper()
-    {
-        HandlebarsRuntime::registerHelper('foo', function() {});
-        $this->assertInstanceOf('Closure', HandlebarsRuntime::getHelper('foo'));
-    }
+  /**
+   * @covers Cradle\Handlebars\HandlebarsRuntime::registerHelper
+   */
+  public function testRegisterHelper()
+  {
+    HandlebarsRuntime::registerHelper('foo', function() {});
+    $this->assertInstanceOf('Closure', HandlebarsRuntime::getHelper('foo'));
+  }
 
-    /**
-     * @covers Cradle\Handlebars\HandlebarsRuntime::registerPartial
-     */
-    public function testRegisterPartial()
-    {
-        HandlebarsRuntime::registerPartial('foo', 'bar');
-        $this->assertTrue(is_string(HandlebarsRuntime::getPartial('foo')));
-    }
+  /**
+   * @covers Cradle\Handlebars\HandlebarsRuntime::registerPartial
+   */
+  public function testRegisterPartial()
+  {
+    HandlebarsRuntime::registerPartial('foo', 'bar');
+    $this->assertTrue(is_string(HandlebarsRuntime::getPartial('foo')));
+  }
 
-    /**
-     * @covers Cradle\Handlebars\HandlebarsRuntime::unregisterHelper
-     */
-    public function testUnregisterHelper()
-    {
-        HandlebarsRuntime::unregisterHelper('if');
-        $this->assertNull(HandlebarsRuntime::getHelper('if'));
-    }
+  /**
+   * @covers Cradle\Handlebars\HandlebarsRuntime::unregisterHelper
+   */
+  public function testUnregisterHelper()
+  {
+    HandlebarsRuntime::unregisterHelper('if');
+    $this->assertNull(HandlebarsRuntime::getHelper('if'));
+  }
 
-    /**
-     * @covers Cradle\Handlebars\HandlebarsRuntime::unregisterPartial
-     */
-    public function testUnregisterPartial()
-    {
-        HandlebarsRuntime::registerPartial('foo', 'bar');
-        HandlebarsRuntime::unregisterPartial('foo');
+  /**
+   * @covers Cradle\Handlebars\HandlebarsRuntime::unregisterPartial
+   */
+  public function testUnregisterPartial()
+  {
+    HandlebarsRuntime::registerPartial('foo', 'bar');
+    HandlebarsRuntime::unregisterPartial('foo');
 
-        $this->assertNull(HandlebarsRuntime::getPartial('foo'));
-    }
+    $this->assertNull(HandlebarsRuntime::getPartial('foo'));
+  }
 }

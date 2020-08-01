@@ -11,262 +11,262 @@ use Cradle\Resolver\ResolverHandler;
  */
 class Cradle_Handlebars_HandlebarsCompiler_Test extends TestCase
 {
-     /**
-     * @var HandlebarsCompiler
-     */
-    protected $object;
+   /**
+   * @var HandlebarsCompiler
+   */
+  protected $object;
 
-     /**
-     * @var string
-     */
-    protected $source;
+   /**
+   * @var string
+   */
+  protected $source;
 
-     /**
-     * @var string
-     */
-    protected $template1;
+   /**
+   * @var string
+   */
+  protected $template1;
 
-     /**
-     * @var string
-     */
-    protected $template2;
+   /**
+   * @var string
+   */
+  protected $template2;
 
-    /**
-     * Sets up the fixture, for example, opens a network connection.
-     * This method is called before a test is executed.
-     */
-    protected function setUp()
-    {
-        $handler = new HandlebarsHandler;
-        $this->source = file_get_contents(__DIR__.'/assets/tokenizer.html');
-        $this->object = new HandlebarsCompiler($handler, $this->source);
+  /**
+   * Sets up the fixture, for example, opens a network connection.
+   * This method is called before a test is executed.
+   */
+  protected function setUp()
+  {
+    $handler = new HandlebarsHandler;
+    $this->source = file_get_contents(__DIR__.'/assets/tokenizer.html');
+    $this->object = new HandlebarsCompiler($handler, $this->source);
 
-        $this->template1 = file_get_contents(__DIR__.'/assets/template1.php');
-        $this->template2 = file_get_contents(__DIR__.'/assets/template2.php');
-    }
+    $this->template1 = file_get_contents(__DIR__.'/assets/template1.php');
+    $this->template2 = file_get_contents(__DIR__.'/assets/template2.php');
+  }
 
-    /**
-     * Tears down the fixture, for example, closes a network connection.
-     * This method is called after a test is executed.
-     */
-    protected function tearDown()
-    {
-    }
+  /**
+   * Tears down the fixture, for example, closes a network connection.
+   * This method is called after a test is executed.
+   */
+  protected function tearDown()
+  {
+  }
 
-    /**
-     * @covers Cradle\Handlebars\HandlebarsCompiler::__construct
-     */
-    public function test__construct()
-    {
-        $handler = new HandlebarsHandler;
-        $this->object->__construct($handler, $this->source);
-        $this->assertInstanceOf('Cradle\Handlebars\HandlebarsHandler', $handler);
-    }
+  /**
+   * @covers Cradle\Handlebars\HandlebarsCompiler::__construct
+   */
+  public function test__construct()
+  {
+    $handler = new HandlebarsHandler;
+    $this->object->__construct($handler, $this->source);
+    $this->assertInstanceOf('Cradle\Handlebars\HandlebarsHandler', $handler);
+  }
 
-    /**
-     * @covers Cradle\Handlebars\HandlebarsCompiler::getSource
-     */
-    public function testGetSource()
-    {
-        $template = $this->object->getSource();
-        $this->assertEquals($this->source, $template);
-    }
+  /**
+   * @covers Cradle\Handlebars\HandlebarsCompiler::getSource
+   */
+  public function testGetSource()
+  {
+    $template = $this->object->getSource();
+    $this->assertEquals($this->source, $template);
+  }
 
-    /**
-     * @covers Cradle\Handlebars\HandlebarsCompiler::compile
-     * @covers Cradle\Handlebars\HandlebarsCompiler::getTokenizeCallback
-     * @covers Cradle\Handlebars\HandlebarsCompiler::generateText
-     * @covers Cradle\Handlebars\HandlebarsCompiler::generateVariable
-     * @covers Cradle\Handlebars\HandlebarsCompiler::generateEscape
-     * @covers Cradle\Handlebars\HandlebarsCompiler::generateOpen
-     * @covers Cradle\Handlebars\HandlebarsCompiler::generateClose
-     * @covers Cradle\Handlebars\HandlebarsCompiler::generateHelpers
-     * @covers Cradle\Handlebars\HandlebarsCompiler::generatePartials
-     * @covers Cradle\Handlebars\HandlebarsCompiler::parseArguments
-     * @covers Cradle\Handlebars\HandlebarsCompiler::parseArgument
-     * @covers Cradle\Handlebars\HandlebarsCompiler::tokenize
-     * @covers Cradle\Handlebars\HandlebarsCompiler::prettyPrint
-     * @covers Cradle\Handlebars\HandlebarsCompiler::findSection
-     * @covers Cradle\Handlebars\HandlebarsCompiler::trim
-     */
-    public function testCompile()
-    {
-        $actual = $this->object->compile();
-        $this->assertEquals(trim($this->template1), trim($actual));
+  /**
+   * @covers Cradle\Handlebars\HandlebarsCompiler::compile
+   * @covers Cradle\Handlebars\HandlebarsCompiler::getTokenizeCallback
+   * @covers Cradle\Handlebars\HandlebarsCompiler::generateText
+   * @covers Cradle\Handlebars\HandlebarsCompiler::generateVariable
+   * @covers Cradle\Handlebars\HandlebarsCompiler::generateEscape
+   * @covers Cradle\Handlebars\HandlebarsCompiler::generateOpen
+   * @covers Cradle\Handlebars\HandlebarsCompiler::generateClose
+   * @covers Cradle\Handlebars\HandlebarsCompiler::generateHelpers
+   * @covers Cradle\Handlebars\HandlebarsCompiler::generatePartials
+   * @covers Cradle\Handlebars\HandlebarsCompiler::parseArguments
+   * @covers Cradle\Handlebars\HandlebarsCompiler::parseArgument
+   * @covers Cradle\Handlebars\HandlebarsCompiler::tokenize
+   * @covers Cradle\Handlebars\HandlebarsCompiler::prettyPrint
+   * @covers Cradle\Handlebars\HandlebarsCompiler::findSection
+   * @covers Cradle\Handlebars\HandlebarsCompiler::trim
+   */
+  public function testCompile()
+  {
+    $actual = $this->object->compile();
+    $this->assertEquals(trim($this->template1), trim($actual));
 
-        $actual = $this->object->compile(false);
-        $this->assertEquals(trim($this->template2), trim($actual));
-    }
+    $actual = $this->object->compile(false);
+    $this->assertEquals(trim($this->template2), trim($actual));
+  }
 
-    /**
-     * @covers Cradle\Handlebars\HandlebarsCompiler::setOffset
-     */
-    public function testSetOffset()
-    {
-        $actual = $this->object->setOffset(3);
-        $this->assertInstanceOf('Cradle\Handlebars\HandlebarsCompiler', $actual);
-    }
+  /**
+   * @covers Cradle\Handlebars\HandlebarsCompiler::setOffset
+   */
+  public function testSetOffset()
+  {
+    $actual = $this->object->setOffset(3);
+    $this->assertInstanceOf('Cradle\Handlebars\HandlebarsCompiler', $actual);
+  }
 
-    /**
-     * @covers Cradle\Handlebars\HandlebarsCompiler::__callResolver
-     */
-    public function test__callResolver()
-    {
-        $actual = $this->object->__callResolver(ResolverCallStub::class, [])->foo('bar');
-        $this->assertEquals('barfoo', $actual);
-    }
+  /**
+   * @covers Cradle\Handlebars\HandlebarsCompiler::__callResolver
+   */
+  public function test__callResolver()
+  {
+    $actual = $this->object->__callResolver(ResolverCallStub::class, [])->foo('bar');
+    $this->assertEquals('barfoo', $actual);
+  }
 
-    /**
-     * @covers Cradle\Handlebars\HandlebarsCompiler::addResolver
-     */
-    public function testAddResolver()
-    {
-        $actual = $this->object->addResolver(ResolverCallStub::class, function() {});
-        $this->assertInstanceOf('Cradle\Handlebars\HandlebarsCompiler', $actual);
-    }
+  /**
+   * @covers Cradle\Handlebars\HandlebarsCompiler::addResolver
+   */
+  public function testAddResolver()
+  {
+    $actual = $this->object->addResolver(ResolverCallStub::class, function() {});
+    $this->assertInstanceOf('Cradle\Handlebars\HandlebarsCompiler', $actual);
+  }
 
-    /**
-     * @covers Cradle\Handlebars\HandlebarsCompiler::getResolverHandler
-     */
-    public function testGetResolverHandler()
-    {
-        $actual = $this->object->getResolverHandler();
-        $this->assertInstanceOf('Cradle\Resolver\ResolverInterface', $actual);
-    }
+  /**
+   * @covers Cradle\Handlebars\HandlebarsCompiler::getResolverHandler
+   */
+  public function testGetResolverHandler()
+  {
+    $actual = $this->object->getResolverHandler();
+    $this->assertInstanceOf('Cradle\Resolver\ResolverInterface', $actual);
+  }
 
-    /**
-     * @covers Cradle\Handlebars\HandlebarsCompiler::resolve
-     */
-    public function testResolve()
-    {
-        $actual = $this->object->addResolver(
-            ResolverCallStub::class,
-            function() {
-                return new ResolverAddStub();
-            }
-        )
-        ->resolve(ResolverCallStub::class)
-        ->foo('bar');
+  /**
+   * @covers Cradle\Handlebars\HandlebarsCompiler::resolve
+   */
+  public function testResolve()
+  {
+    $actual = $this->object->addResolver(
+      ResolverCallStub::class,
+      function() {
+        return new ResolverAddStub();
+      }
+    )
+    ->resolve(ResolverCallStub::class)
+    ->foo('bar');
 
-        $this->assertEquals('barfoo', $actual);
-    }
+    $this->assertEquals('barfoo', $actual);
+  }
 
-    /**
-     * @covers Cradle\Handlebars\HandlebarsCompiler::resolveShared
-     */
-    public function testResolveShared()
-    {
-        $actual = $this
-            ->object
-            ->resolveShared(ResolverSharedStub::class)
-            ->reset()
-            ->foo('bar');
+  /**
+   * @covers Cradle\Handlebars\HandlebarsCompiler::resolveShared
+   */
+  public function testResolveShared()
+  {
+    $actual = $this
+      ->object
+      ->resolveShared(ResolverSharedStub::class)
+      ->reset()
+      ->foo('bar');
 
-        $this->assertEquals('barfoo', $actual);
+    $this->assertEquals('barfoo', $actual);
 
-        $actual = $this
-            ->object
-            ->resolveShared(ResolverSharedStub::class)
-            ->foo('bar');
+    $actual = $this
+      ->object
+      ->resolveShared(ResolverSharedStub::class)
+      ->foo('bar');
 
-        $this->assertEquals('barbar', $actual);
-    }
+    $this->assertEquals('barbar', $actual);
+  }
 
-    /**
-     * @covers Cradle\Handlebars\HandlebarsCompiler::resolveStatic
-     */
-    public function testResolveStatic()
-    {
-        $actual = $this
-            ->object
-            ->resolveStatic(
-                ResolverStaticStub::class,
-                'foo',
-                'bar'
-            );
+  /**
+   * @covers Cradle\Handlebars\HandlebarsCompiler::resolveStatic
+   */
+  public function testResolveStatic()
+  {
+    $actual = $this
+      ->object
+      ->resolveStatic(
+        ResolverStaticStub::class,
+        'foo',
+        'bar'
+      );
 
-        $this->assertEquals('barfoo', $actual);
-    }
+    $this->assertEquals('barfoo', $actual);
+  }
 
-    /**
-     * @covers Cradle\Handlebars\HandlebarsCompiler::setResolverHandler
-     */
-    public function testSetResolverHandler()
-    {
-        $actual = $this->object->setResolverHandler(new ResolverHandlerStub);
-        $this->assertInstanceOf('Cradle\Handlebars\HandlebarsCompiler', $actual);
-    }
+  /**
+   * @covers Cradle\Handlebars\HandlebarsCompiler::setResolverHandler
+   */
+  public function testSetResolverHandler()
+  {
+    $actual = $this->object->setResolverHandler(new ResolverHandlerStub);
+    $this->assertInstanceOf('Cradle\Handlebars\HandlebarsCompiler', $actual);
+  }
 
-    /**
-     * @covers Cradle\Handlebars\HandlebarsCompiler::bindCallback
-     */
-    public function testBindCallback()
-    {
-        $trigger = new StdClass;
-        $trigger->success = null;
-        $trigger->test = $this;
+  /**
+   * @covers Cradle\Handlebars\HandlebarsCompiler::bindCallback
+   */
+  public function testBindCallback()
+  {
+    $trigger = new StdClass;
+    $trigger->success = null;
+    $trigger->test = $this;
 
-        $this->object->bindCallback(function() use ($trigger) {
-            $trigger->success = true;
-            $trigger->test->assertInstanceOf('Cradle\Handlebars\HandlebarsCompiler', $this);
-        });
+    $this->object->bindCallback(function() use ($trigger) {
+      $trigger->success = true;
+      $trigger->test->assertInstanceOf('Cradle\Handlebars\HandlebarsCompiler', $this);
+    });
 
-        $this->assertInstanceOf('Cradle\Handlebars\HandlebarsCompiler', $this->object);
-    }
+    $this->assertInstanceOf('Cradle\Handlebars\HandlebarsCompiler', $this->object);
+  }
 }
 
 if(!class_exists('Cradle\Handlebars\ResolverCallStub')) {
-    class ResolverCallStub
+  class ResolverCallStub
+  {
+    public function foo($string)
     {
-        public function foo($string)
-        {
-            return $string . 'foo';
-        }
+      return $string . 'foo';
     }
+  }
 }
 
 if(!class_exists('Cradle\Handlebars\ResolverAddStub')) {
-    class ResolverAddStub
+  class ResolverAddStub
+  {
+    public function foo($string)
     {
-        public function foo($string)
-        {
-            return $string . 'foo';
-        }
+      return $string . 'foo';
     }
+  }
 }
 
 if(!class_exists('Cradle\Handlebars\ResolverSharedStub')) {
-    class ResolverSharedStub
+  class ResolverSharedStub
+  {
+    public $name = 'foo';
+
+    public function foo($string)
     {
-        public $name = 'foo';
-
-        public function foo($string)
-        {
-            $name = $this->name;
-            $this->name = $string;
-            return $string . $name;
-        }
-
-        public function reset()
-        {
-            $this->name = 'foo';
-            return $this;
-        }
+      $name = $this->name;
+      $this->name = $string;
+      return $string . $name;
     }
+
+    public function reset()
+    {
+      $this->name = 'foo';
+      return $this;
+    }
+  }
 }
 
 if(!class_exists('Cradle\Handlebars\ResolverStaticStub')) {
-    class ResolverStaticStub
+  class ResolverStaticStub
+  {
+    public static function foo($string)
     {
-        public static function foo($string)
-        {
-            return $string . 'foo';
-        }
+      return $string . 'foo';
     }
+  }
 }
 
 if(!class_exists('Cradle\Handlebars\ResolverHandlerStub')) {
-    class ResolverHandlerStub extends ResolverHandler
-    {
-    }
+  class ResolverHandlerStub extends ResolverHandler
+  {
+  }
 }

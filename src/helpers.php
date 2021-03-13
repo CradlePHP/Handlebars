@@ -215,6 +215,58 @@ return [
     return sprintf($layout, $code);
   },
 
+  'tokenize->>' => function ($name) {
+    //get args
+    $args = func_get_args();
+
+    //we need a resolver
+    $resolver = new Cradle\Resolver\ResolverHandler();
+
+    //get the name
+    //it will be like 'something'
+    //or $data->find('something')
+    $original = $name = array_shift($args);
+
+    //we need the options
+    $options = array_pop($args);
+
+    //if it's a data lookup
+    if (strpos($name, '$data->find(') === 0) {
+      //this is not what we really want
+      $name = substr($name, 12, -1);
+    }
+
+    //if it has quotes
+    if (substr($name, 0, 1) === "'" && substr($name, -1) === "'") {
+      //remove it
+      $name = substr($name, 1, -1);
+    }
+
+    //get the partial
+    $partial = $resolver->resolveStatic(
+      Cradle\Handlebars\HandlebarsRuntime::class,
+      'getPartial',
+      $name
+    );
+
+    //but if the partial is null
+    if (is_null($partial)) {
+      //name is really the partial
+      $partial = $name;
+    }
+
+    return $resolver
+      ->resolve(
+        Cradle\Handlebars\HandlebarsCompiler::class,
+        $options['handlebars'],
+        $partial
+      )
+      ->setOffset($options['offset'] + 3)
+      ->generateText([
+        'value' => $partial
+      ]);
+  },
+
   'noop' => function () {
     $args = func_get_args();
     $options = array_pop($args);

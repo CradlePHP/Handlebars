@@ -251,6 +251,35 @@ class HandlebarsCompiler
   }
 
   /**
+   * Partially renders the text tokens
+   *
+   * @param *array $node
+   * @param *array $open
+   *
+   * @return string
+   */
+  public function generateText($node)
+  {
+    $buffer = '';
+
+    $value = explode("\n", $node['value']);
+    $last = count($value) - 1;
+
+    foreach ($value as $i => $line) {
+      $line = str_replace("'", '\\\'', $line);
+
+      if ($i === $last) {
+        $buffer .= $this->prettyPrint(sprintf(self::BLOCK_TEXT_LAST, $line));
+        continue;
+      }
+
+      $buffer .= $this->prettyPrint(sprintf(self::BLOCK_TEXT_LINE, $line));
+    }
+
+    return $buffer;
+  }
+
+  /**
    * Returns the source
    *
    * @return string
@@ -333,35 +362,6 @@ class HandlebarsCompiler
           break;
       }
     });
-  }
-
-  /**
-   * Partially renders the text tokens
-   *
-   * @param *array $node
-   * @param *array $open
-   *
-   * @return string
-   */
-  protected function generateText($node)
-  {
-    $buffer = '';
-
-    $value = explode("\n", $node['value']);
-    $last = count($value) - 1;
-
-    foreach ($value as $i => $line) {
-      $line = str_replace("'", '\\\'', $line);
-
-      if ($i === $last) {
-        $buffer .= $this->prettyPrint(sprintf(self::BLOCK_TEXT_LAST, $line));
-        continue;
-      }
-
-      $buffer .= $this->prettyPrint(sprintf(self::BLOCK_TEXT_LINE, $line));
-    }
-
-    return $buffer;
   }
 
   /**

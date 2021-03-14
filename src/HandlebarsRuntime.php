@@ -1,7 +1,6 @@
 <?php //-->
 /**
- * This file is part of the Cradle PHP Library.
- * (c) 2016-2018 Openovate Labs
+ * This file is part of the Handlebars PHP Project.
  *
  * Copyright and license information can be found at LICENSE.txt
  * distributed with this package.
@@ -19,7 +18,6 @@ use Closure;
  *
  * @vendor   Cradle
  * @package  Handlebars
- * @author   Christian Blanquera <cblanquera@openovate.com>
  * @standard PSR-2
  */
 class HandlebarsRuntime
@@ -28,7 +26,7 @@ class HandlebarsRuntime
    * @var array $partials A raw list of partials
    */
   protected static $partials = [];
-  
+
   /**
    * @var array $helpers A raw list of helpers
    */
@@ -57,10 +55,10 @@ class HandlebarsRuntime
       if (!is_null($data) && self::$helpers[$name] instanceof Closure) {
         return self::$helpers[$name]->bindTo($data, get_class($data));
       }
-      
+
       return self::$helpers[$name];
     }
-    
+
     return null;
   }
 
@@ -76,15 +74,15 @@ class HandlebarsRuntime
     if (is_null($data)) {
       return self::$helpers;
     }
-    
+
     $helpers = [];
-    
+
     foreach (self::$helpers as $name => $helper) {
       if ($helper instanceof Closure) {
         $helpers[$name] = $helper->bindTo($data, get_class($data));
       }
     }
-    
+
     return $helpers;
   }
 
@@ -100,7 +98,7 @@ class HandlebarsRuntime
     if (isset(self::$partials[$name])) {
       return self::$partials[$name];
     }
-    
+
     return null;
   }
 
